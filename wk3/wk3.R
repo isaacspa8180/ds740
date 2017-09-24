@@ -1,3 +1,6 @@
+library(leaps)
+
+
 #1
 wi <- read.csv('Wisconsin_income.csv', 
                colClasses = c('CIT2' = 'factor',

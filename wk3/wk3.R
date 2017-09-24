@@ -70,7 +70,15 @@ for (i in 1:k) {
 
 mse <- apply(group_error, 1, mean)
 plot(mse)
-which.min(mse)
+mse_min <- which.min(mse)
 
 #9
 se <- apply(group_error, 1, sd) / sqrt(k)
+good_models <- which(mse <= mse[mse_min] + se[mse_min])
+best_model <- min(good_models)
+
+#11
+wi_best_subset_6 <- regsubsets(PERNP_log ~ .-JWMNP-PERNP, 
+                               data = wi, 
+                               nvmax = 6)
+

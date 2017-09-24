@@ -85,3 +85,60 @@ wi_best_subset_6 <- regsubsets(PERNP_log ~ .-JWMNP-PERNP,
                                data = wi, 
                                nvmax = 6)
 
+
+#12
+library(ISLR)
+
+
+Auto['high_mpg'] <- rep(0, nrow(Auto))
+mpg_median <- with(Auto, median(mpg))
+Auto$high_mpg[which(Auto$mpg > mpg_median)] <- 1
+Auto$high_mpg <- as.factor(Auto$high_mpg)
+Auto$origin <- as.factor(Auto$origin)
+
+#14
+fit <- glm(high_mpg ~ .-mpg-name, 
+	   data = Auto, 
+	   family = 'binomial')
+
+#15
+library(car)
+vif(fit)
+
+#16
+#removing mpg, name, and displacement
+auto_cols = c('cylinders', 
+      	      'horsepower', 
+	          'weight', 
+	          'acceleration', 
+	          'year', 
+	          'origin', 
+	          'high_mpg')
+auto = Auto[,auto_cols]
+
+set.seed(3)
+k <- 10
+n <- nrow(auto)
+groups <- c(rep(1:k, floor(n / k)), 1:(n %% k))
+cv_groups <- sample(groups, n)
+predict_vals = rep(-1, n)
+
+for (i in 1:k) {
+    group_i <- (cv_groups == i)
+
+	cv_fit <- glm(high_mpg ~ .,
+		          data = auto[!group_i, ], 
+		          family = 'binomial')
+
+    predict_vals[group_i] = predict(cv_fit, 
+                                    auto[group_i, ], 
+                                    type = 'response')
+}
+
+#17
+library(pROC)
+my_roc = roc(response = auto$high_mpg, predictor = predict_vals)
+my_roc
+jpeg('wk3_roc.jpg')
+plot.roc(my_roc)
+dev.off()

@@ -54,7 +54,7 @@ lasso_fit <-  glmnet(x, y, lambda=lambdalist, alpha=1)
 coef(lasso_fit, s=0.02)
 coef(lasso_fit, s=0.03)
 coef(lasso_fit, s=0.05)
-coef(lasso_fit, s=0.08)
+coef(lasso_fit, s=0.8)
 
 #22
 n = nrow(college_transformed)

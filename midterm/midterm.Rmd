@@ -3,6 +3,12 @@ title: "Ds 740 midterm"
 author: "Paul Isaacson"
 date: 'October 30, 2017'
 output: word_document
+references:
+- id: cite1
+  title: Hypercalcemia
+  author:
+  - family: Mayo Clinic Staff
+  URL: 'https://www.mayoclinic.org/diseases-conditions/hypercalcemia/symptoms-causes/syc-20355523'
 ---
 	
 ```{r echo=FALSE}
@@ -29,13 +35,13 @@ df_factor$CAMMOL <- NULL
 df_factor$AGEGROUP <- NULL
 ```
 
-#PART 1
+# PART 1
 
 #Discuss why you selected the response variable (factor versus quantitative).
 In this study, I looked at the factor reponse of CAMLEVEL for the data set calcium. This data set came from the study by Boyd, Delost, and Holcomb (1998) entitled 'Calcium, inorganic phosphorus and alkaline phosphatase levels in elderly patients. The original intent of the study was to determine if gender and lab was a significant deferentiator in levels of calcium, inorganic phosphorus and alkaline phosphorus. I, on the other hand, took a slightly different approach. I believe it to be important to predict which of the factors will lead to classification in either the high calcium (hypercalcemia) or low calcium (hypocalcemia). For this goal, a categorical response variable is needed. 
 
 #Describe a possible practical purpose for the data analysis and an audience who might be interested in this purpose.
-With such a classification model, one could make a determination if an elderly (over 65) individual was at risk for either conditions. Further tests, such as routine blood tests, could be targeted for individuals who are classified as hypocalcemic. However, this is not an overwhelming benefit as such routine blood tests are performed regularly on this population. Perhaps more importantly, a classification of hypercalcemia could be the a sign of more serious disesease, such as lung and breast cancer (cite 1) With early detection, symptoms such as kidney problems or arryhthmia may be avoided. 
+With such a classification model, one could make a determination if an elderly (over 65) individual was at risk for either conditions. Further tests, such as routine blood tests, could be targeted for individuals who are classified as hypocalcemic. However, this is not an overwhelming benefit as such routine blood tests are performed regularly on this population. Perhaps more importantly, a classification of hypercalcemia could be the a sign of more serious disesease, such as lung and breast cancer @cite1 With early detection, symptoms such as kidney problems or arryhthmia may be avoided. 
 
 #PART 2 
 #Identify two possible methods (from two different lessons) for predicting the response and provide justification for why these methods are appropriate for the data.
@@ -44,6 +50,7 @@ For classification problems, knn, logistic regression, lda, decision trees, and 
 ```{r echo=FALSE}
 predictors_all <- c('AGE', 'SEX', 'ALKPHOS', 'LAB', 'PHOSMMOL')
 #This creates plots of CAMLEVEL vs each of the five predictor variables
+par(mfrow=c(2,3))
 for (predictor in predictors_all) {
 	plot(df_factor[, 'CAMLEVEL'] ~ df_factor[, predictor],
 		 main=sprintf('Spineplot of calcium level versus %s', predictor),
@@ -71,7 +78,4 @@ The random forest, the best performing model had 3 predictors (PHOSMMOL, LAB, AL
 
 In some regards, both models did little better than classifying everyone as 'Normal'. This approach would produce an error of 0.2873563.  However, overall error is perhaps not the best measure for this study. In may be more acceptable to have a higher overall error rate if the model was better at identifying 'Low' and 'High' classifications. Further studies should explore this distinction.
 
-
-
-cite
-1https://www.mayoclinic.org/diseases-conditions/hypercalcemia/symptoms-causes/syc-20355523 
+#Bibliography

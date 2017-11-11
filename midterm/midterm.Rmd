@@ -1,5 +1,5 @@
 ---
-title: "Ds 740 midterm"
+title: "DS 740 Midterm"
 author: "Paul Isaacson"
 date: 'October 30, 2017'
 output: word_document
@@ -34,19 +34,23 @@ df_factor$CAMMOL <- NULL
 #removing AGEGROUP as it is correlated with Age
 df_factor$AGEGROUP <- NULL
 ```
+In this study, I looked at the factor response of CAMLEVEL for the data set calcium. This data set came from the study by Boyd, Delost, and Holcomb (1998) entitled 'Calcium, inorganic phosphorus and alkaline phosphatase levels in elderly patients. The original intent of the study was to determine if gender and lab was a significant differentiator in levels of calcium, inorganic phosphorus and alkaline phosphorus. I, on the other hand, took a slightly different approach. I believe it to be important to predict which of the factors will lead to classification in either the high calcium (hypercalcemia) or low calcium (hypocalcemia). For this goal, a categorical response variable is needed. 
 
-# PART 1
+With such a classification model, one could determine if an elderly (over 65) individual was at risk for either conditions. Further tests, such as routine blood tests, could be targeted for individuals who are classified as hypocalcemia. However, this is not an overwhelming benefit as such routine blood tests are performed regularly on this population. Perhaps more importantly, a classification of hypercalcemia could be a sign of more serious diseases, such as lung and breast cancer (@cite1). With early detection, symptoms such as kidney problems or arrhythmia may be avoided. 
 
-#Discuss why you selected the response variable (factor versus quantitative).
-In this study, I looked at the factor reponse of CAMLEVEL for the data set calcium. This data set came from the study by Boyd, Delost, and Holcomb (1998) entitled 'Calcium, inorganic phosphorus and alkaline phosphatase levels in elderly patients. The original intent of the study was to determine if gender and lab was a significant deferentiator in levels of calcium, inorganic phosphorus and alkaline phosphorus. I, on the other hand, took a slightly different approach. I believe it to be important to predict which of the factors will lead to classification in either the high calcium (hypercalcemia) or low calcium (hypocalcemia). For this goal, a categorical response variable is needed. 
+For classification problems, knn, logistic regression, lda, decision trees, and ensemble methods such as bagging, random forests, and boosting are appropriate. However, because the response variable was not binomial, I discarded logistic regression as a choice. The two models selected for analysis was knn and random forest. I selected knn because it is simple and non-parametric. I was also interested in exploring optimal K values. I selected random forest from the similar decision tree methods because I suspected only a small subset of the variables would be more informative than the others.     
 
-#Describe a possible practical purpose for the data analysis and an audience who might be interested in this purpose.
-With such a classification model, one could make a determination if an elderly (over 65) individual was at risk for either conditions. Further tests, such as routine blood tests, could be targeted for individuals who are classified as hypocalcemic. However, this is not an overwhelming benefit as such routine blood tests are performed regularly on this population. Perhaps more importantly, a classification of hypercalcemia could be the a sign of more serious disesease, such as lung and breast cancer @cite1 With early detection, symptoms such as kidney problems or arryhthmia may be avoided. 
+A critical step in fitting a good model is to find the appropriate parameters. Because I only had 5 parameters to work with (Fig. 2), I spend much time performing cross validations on all the permutations of variables. For knn, the best performing model had 2 predictors (AGE, LAB) for knn. This produced a $cv_{10} = 0.2816092$. Additionally, the k was set to 7 based on the plot of error rate versus K values (Fig. 1).
 
-#PART 2 
-#Identify two possible methods (from two different lessons) for predicting the response and provide justification for why these methods are appropriate for the data.
-For classification problems, knn, logistic regression, lda, decision trees, and ensemble methds such as bagging, random forests, and boosting are approprate. However, because the response variable was not binomial, I discarded logisitic regression as a choice. The two models selected for analysis was knn and random forest. I selected knn because it is simple and non-parametric. I was also interested in exploring optimal K values. I selected random forest from the similar decision tree methods because I suspected only a small subset of the variables would be more informative than the others.     
+The random forest, the best performing model had 3 predictors (PHOSMMOL, LAB, ALKPHOS). This produced a $cv_{10} = 0.2758621$.
 
+In some regards, both models did little better than classifying everyone as 'Normal'. This approach would produce an error of 0.2873563.  However, overall error is perhaps not the best measure for this study. In may be more acceptable to have a higher overall error rate if the model was better at identifying 'Low' and 'High' classifications. Further studies should explore this distinction and rate classification error based on this.
+
+After the optimal two models were found using cross validation, I used double cross validation on the knn model. For the inner cross validation, I tested error rate versus various K values. The optimal model produced $cv_10 = 0.2988506$.
+
+The models would benefit from additional observations and predictors. Because of the CV values near chance, I would not feel comfortable using this to make decisions until the data was enriched.
+
+# Figure 1
 ```{r echo=FALSE}
 predictors_all <- c('AGE', 'SEX', 'ALKPHOS', 'LAB', 'PHOSMMOL')
 #This creates plots of CAMLEVEL vs each of the five predictor variables
@@ -59,23 +63,11 @@ for (predictor in predictors_all) {
 }
 ```
 
-#Use cross-validation techniques to select between the two methods (and among any parameters needed for those methods).
-done
-
-#Add an outer level of cross-validation to further assess the predictive ability of the model selected.
-not done
-
-#Fit the final selected model to the data and summarize and discuss the outcome of the fit. Include estimates of any model parameters.
-A critical step in fitting a good model is to find the appropriate parameters. Because I only had 5 parameters to work with, I spend much time performing cross validations on all the permutations of variables. For knn, the best performing model had 2 predictors (AGE, LAB) for knn. This produced a $cv_{10} = 0.2816092$. Additionally, the k was set to 7 based on the following plot
-
+# Figure 2
 ```{r echo=FALSE}
 plot_best_k(df_factor[1:116,], 
 			df_factor[117:nrow(df_factor),], 
 			'CAMLEVEL', c('AGE', 'LAB'))
 ```
 
-The random forest, the best performing model had 3 predictors (PHOSMMOL, LAB, ALKPHOS). This produced a $cv_{10} = 0.2758621$.
-
-In some regards, both models did little better than classifying everyone as 'Normal'. This approach would produce an error of 0.2873563.  However, overall error is perhaps not the best measure for this study. In may be more acceptable to have a higher overall error rate if the model was better at identifying 'Low' and 'High' classifications. Further studies should explore this distinction.
-
-#Bibliography
+# References

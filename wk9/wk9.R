@@ -19,11 +19,14 @@ abline(b / w[2], -w[1] / w[2]) #support vector classifier
 abline((b + 1) / w[2], -w[1] / w[2], lty=2)
 abline((b - 1) / w[2], -w[1] / w[2], lty=2)
 
+#3
 library(e1071) #svm
 fit_svm <- svm(Region ~ logSize + logRange, 
                data=df,
                kernel='linear',
                cost=1)
+table(fit_svm$fitted, df$Region)
+
 
 #7
 library(e1071)
@@ -46,7 +49,7 @@ tune_out <- tune(svm,
                  type='C-classification', 
                  ranges=list(cost=c(0.001, 0.01, 0.1, 1, 5, 10, 100)))
 #10
-set.seed(9)
+#set.seed(9)
 tune_out2 <- tune(svm,
                   high_gas ~ .,
                   data=Auto,

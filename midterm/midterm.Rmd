@@ -44,6 +44,7 @@ For classification problems, knn, logistic regression, lda, decision trees, and 
 ```{r echo=FALSE}
 predictors_all <- c('AGE', 'SEX', 'ALKPHOS', 'LAB', 'PHOSMMOL')
 #This creates plots of CAMLEVEL vs each of the five predictor variables
+par(mfrow=c(2,3))
 for (predictor in predictors_all) {
 	plot(df_factor[, 'CAMLEVEL'] ~ df_factor[, predictor],
 		 main=sprintf('Spineplot of calcium level versus %s', predictor),

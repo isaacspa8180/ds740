@@ -1,0 +1,622 @@
+--
+title: "Homework 2 R markdown"
+author: "(your name here)"
+date: '`r Sys.Date()`'
+output:
+  word_document:
+    fig_height: 4
+    fig_width: 4.5
+  pdf_document:
+    fig_height: 4
+    fig_width: 4.5
+  html_document:
+    fig_height: 4
+    fig_width: 4.5
+---
+
+
+```{r, setup, include=FALSE}
+require(mosaic)   # Load additional packages here 
+
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+#### <span style="color:Blue">**Intellectual Property:**</span>  
+These problems are the intellectual property of the instructors and may not be reproduced outside of this course.
+
+#### <span style="color:Crimson">**Due Date:**</span>  
+Tuesday, Sep 19, 2017 at 11:59 PM 
+
+***  
+
+##########################################################################
+## <span style="color:DarkViolet">Problem 1:  Model Assessment  </span>
+##########################################################################
+
+<span style="color:DarkViolet">This problem practices application of proper model assessment techniques, with a multiple linear regression model.</span>
+
+<span style="color:DarkViolet">Download the data set *Trees.csv* [from Lesson 2 on D2L] and read it into R.  Reference with description of the *original* measurements may be found at: </span> https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/trees.html
+
+```{r echo=FALSE}
+trees <- read.csv('Trees.csv')
+
+```
+
+<span style="color:DarkViolet">The general goal for this dataset is to predict Volume based on Girth and Height.  We will be fitting a predictive model using multiple linear regression.  The model is given below:
+$Volume = \beta_0+\beta_1\cdot Girth +\beta_2\cdot Height+\beta_3\cdot Girth\cdot Height+\beta_4 \cdot Girth^2+\beta_5\cdot Girth^2\cdot Height$  
+Note that there are five predictors, some of which are transformations of the original two variables Girth and Height, for predicting the value of the response variable Volume.</span>
+
+### <span style="color:DarkViolet">Question 1</span> **<span style="color:Crimson">(3 points)</span>**
+<span style="color:DarkViolet">Why is *Volume* the most reasonable response variable?  *Include real-world reasons (eg. physical practicalities) in your discussion.*</span>
+
+My answer was Volume is the most appropriate because it is comprised of the components height and girth
+
+<span style="color:green">**Text Answer**: </span>
+
+***
+
+
+### <span style="color:DarkViolet">Questions 2-7</span> **<span style="color:Crimson">(6 points, 1 each)</span>**
+<span style="color:DarkViolet">Use multiple linear regression to find coefficient estimates:
+</span>
+
+
+
+```{r}
+full_model <- (Volume ~ Girth +
+	                Height +
+			GirthHeight +
+			Girth2 + 
+			Girth2Height)
+
+full_fit <- lm(full_model, data = trees)
+
+```
+
+<span style="color:green">**Numeric Answer**  </span>  
+**<span style="color:red">(AUTOGRADED on D2L)</span>**:  
+$\beta_0 =$   
+$\beta_1 =$   
+$\beta_2 =$   
+$\beta_3 =$  
+$\beta_4 =$   
+$\beta_5 =$   
+
+### <span style="color:DarkViolet">Question 8</span> **<span style="color:Crimson">(2 points)</span>**
+<span style="color:DarkViolet">How many of these predictor variables are significant?</span>
+
+<span style="color:green">**Multiple Choice Answer** </span>
+**<span style="color:red">(AUTOGRADED on D2L)</span>**: 
+0,    
+1,  
+2,  
+3,  
+4, or   
+5
+
+
+*** 
+
+
+<span style="color:DarkViolet">We now assess how useful the fitted model is, via k-fold cross-validation.</span>
+
+### <span style="color:DarkViolet">Question 9</span> **<span style="color:Crimson">(1 point)</span>**
+<span style="color:DarkViolet">In order to perform 5-fold cross-validation, how many separate models must be fit?</span>
+
+
+<span style="color:green">**Multiple Choice Answer** </span>
+
+<span style="color:DarkViolet">We now assess how useful the fitted model is, via k-fold cross-validation.</span>
+
+### <span style="color:DarkViolet">Question 9</span> **<span style="color:Crimson">(1 point)</span>**
+<span style="color:DarkViolet">In order to perform 5-fold cross-validation, how many separate models must be fit?</span>
+
+
+<span style="color:green">**Multiple Choice Answer** </span>
+**<span style="color:red">(AUTOGRADED on D2L)</span>**: 
+
+1,  
+5,  
+6,  
+31, or   
+32
+
+My answer was 6
+
+
+### <span style="color:DarkViolet">Question 10</span> **<span style="color:Crimson">(2 points)</span>**
+<span style="color:DarkViolet">Starting with:</span>
+
+$\texttt{groups = c(rep(1:5,6),1)}$
+
+<span style="color:DarkViolet">Set R’s seed to 2 (for Homework 2) and define cvgroups (random groups for the cross-validation) using the sample() function.  
+Enter your R code below.</span>
+
+<span style="color:green">**Code Answer**: </span>
+```{r, echo=TRUE}
+# Question 10
+groups <- c(rep(1:5, 6), 1)
+set.seed(2)
+n <- dim(trees)[1]
+cv_groups <- sample(groups, n)
+k <- 5
+
+all_predicted_cv <- rep(0, n)
+for (i in 1:k) {
+    group_i = (cv_groups == i)
+    lm_fit_cv <- lm(formula = full_model, 
+		    data = trees,
+		    subset = !group_i)
+    all_predicted_cv[group_i] <- predict.lm(lm_fit_cv, 
+					    trees[group_i,])
+}
+
+# Questions 11-12
+
+```
+
+
+### <span style="color:DarkViolet">Question 11</span> **<span style="color:Crimson">(2 points)</span>**
+<span style="color:DarkViolet">Use the 5-fold CV method to assess the model fit. Provide the predicted y-value for the **first** observation: </span>
+
+
+<span style="color:green">**Numeric Answer** </span>
+**<span style="color:red">(AUTOGRADED on D2L)</span>**:
+My answer was 9.329034
+
+### <span style="color:DarkViolet">Question 12</span> **<span style="color:Crimson">(2 points)</span>**
+<span style="color:DarkViolet">Use the 5-fold CV method to assess the model fit. Provide the predicted y-value for the **second** observation: </span>
+
+
+<span style="color:green">**Numeric Answer** </span>
+**<span style="color:red">(AUTOGRADED on D2L)</span>**:
+My answer was 10.248737
+***
+
+
+### <span style="color:DarkViolet">Question 13</span> **<span style="color:Crimson">(4 points)</span>**
+
+<span style="color:DarkViolet">Calculate and report the $CV_{(5)}$ based on the 5-fold cross-validation: </span>
+
+
+```{r}
+# Question 13
+```
+
+<span style="color:green">**Numeric Answer** </span>
+**<span style="color:red">(AUTOGRADED on D2L)</span>**:
+
+My answer was 611.9922
+My second answer was 19.74168
+
+### <span style="color:DarkViolet">Question 14</span> **<span style="color:Crimson">(1 point)</span>**
+<span style="color:DarkViolet">The MSE computed with the book’s formula is 5.70.  Note that this method assesses the model with the same data used to fit the model.  How does this compare to the value of $CV_{(5)}$ from the previous question? </span>
+
+<span style="color:green">**Multiple Choice Answer** </span>
+**<span style="color:red">(AUTOGRADED on D2L)</span>**:  one of 
+
+A) 	The MSE value is **greater**.
+
+B) 	The MSE value is **less**.
+
+C) 	The two values are about the **same**.
+
+My answer was B
+
+### <span style="color:DarkViolet">Question 15</span> **<span style="color:Crimson">(2 points)</span>**
+<span style="color:DarkViolet">Is the MSE of 5.70 accurate?  **Explain why or why not.** </span>
+
+My answer was No. It does not give an honest assessment. That is to say, the value used for validation is not new and was instead used in fitting the model. 
+
+<span style="color:green">**Text Answer**: </span>
+
+
+### <span style="color:DarkViolet">Question 16</span> **<span style="color:Crimson">(3 points)</span>**
+<span style="color:DarkViolet">Enter your R code for computing the $CV_{(5)}$ measure below.</span>
+
+<span style="color:green">**Code Answer**: </span>
+```{r echo=TRUE}
+sum((all_predicted_cv - trees$Volume)^2)
+```
+
+
+***  
+
+
+
+**Bootstrapping**
+
+<span style="color:DarkViolet"> We will now use the bootstrap to estimate variability of the coefficients.</span>
+
+### <span style="color:DarkViolet">Question 17</span> **<span style="color:Crimson">(4 points)</span>**:
+
+<span style="color:DarkViolet"> Program a function, making use of lm() to fit the linear regression model, that outputs the six coefficient estimates.  Set R’s seed to 2, and then use $\texttt{boot()}$ to produce R = 1000 bootstrap estimates for each of $\beta_0$, $\beta_1$, $\beta_2$, $\beta_3$, $\beta_4$, and $\beta_5$.  
+Enter your R code below.</span>
+
+<span style="color:green">**Code Answer**: </span>
+```{r echo=TRUE}
+# Question 17 
+rary(boot)
+beta_fn_full <- function (inputdata, index) {
+    lm_fit_boot <- lm(formula = full_model,
+		      data = inputdata[index,])
+    return(lm_fit_boot$coef)
+}
+
+set.seed(2)
+full_boot_output <- boot(trees, beta_fn_full, R = 1000)
+# Question 18
+
+# Question 19
+
+# Question 20
+
+# Question 21
+
+# Question 22
+
+# Question 23
+```
+
+
+### <span style="color:DarkViolet">Questions 18-23</span> **<span style="color:Crimson">(6 points, 1 each)</span>**:
+
+<span style="color:DarkViolet">Use your bootstrap estimates to estimate the standard error, $SE(\beta_i)$, for each of i = 0, 1, 2, 3, 4, 5.</span>
+
+<span style="color:green">**Numeric Answer**  </span>  
+**<span style="color:red">(AUTOGRADED on D2L)</span>**:  
+$SE(\hat{\beta_0}) =$   
+$SE(\hat{\beta_1}) =$   
+$SE(\hat{\beta_2}) =$   
+$SE(\hat{\beta_3}) =$   
+$SE(\hat{\beta_4}) =$   
+$SE(\hat{\beta_5}) =$   
+
+
+### <span style="color:DarkViolet">Question 24</span> **<span style="color:Crimson">(2 points)</span>**:
+
+<span style="color:DarkViolet">The standard errors estimated from usual linear regression methods are shown in the R output below:</span>
+
+$\texttt{Coefficients:				}$
+
+$\texttt{Variable       Estimate  Std. Error  t value	 PR(>|t|)}$
+
+$\texttt{(Intercept)	 48.914179	90.852925	 0.538	   0.595}$
+
+$\texttt{Girth	       -8.228180	13.803580	-0.596	   0.556}$
+
+$\texttt{Height		     -0.616152	 1.250446	-0.493	   0.626}$
+
+$\texttt{GirthHeight	  0.103075	 0.180291	 0.572	   0.573}$
+
+$\texttt{Girth2	        0.311160	 0.536379	 0.580	   0.567}$
+
+$\texttt{Girth2Height	 -0.001764	 0.006621	-0.266	   0.792}$
+
+<span style="color:DarkViolet">How do these values compare to the standard errors computed in the previous set of questions? </span>
+
+<span style="color:green">**Multiple Choice Answer** </span>
+**<span style="color:red">(AUTOGRADED on D2L)</span>**:  one of 
+
+A) 	The estimates from usual linear regression methods are **greater**.
+
+	
+B)  The estimates from usual linear regression methods are **less**.
+
+	
+C) 	The two sets of estimates are about the **same**.
+
+
+***
+My answer was B
+
+## Problem 2 - Model Selection
+
+<span style="color:DarkViolet">This problem practices application of proper model selection techniques, with a multiple linear regression model.
+We will continue working with the predictive model using multiple linear regression.  However, we will now consider selection between 6 possible models:</span>
+
+<span style="color:DarkViolet">Model 1: 
+$Volume = \beta_0+\beta_1\cdot Girth +\beta_2\cdot Height+\beta_3\cdot Girth\cdot Height+\beta_4 \cdot Girth^2+\beta_5\cdot Girth^2\cdot Height$  
+</span>
+
+<span style="color:DarkViolet">Model 2: 
+$Volume = \beta_0+\beta_1\cdot Girth +\beta_2\cdot Height$  
+</span>
+
+<span style="color:DarkViolet">Model 3: 
+$Volume = \beta_0+\beta_1\cdot Girth +\beta_2\cdot Height+\beta_3\cdot Girth\cdot Height$  
+</span>
+
+<span style="color:DarkViolet">Model 4: 
+$Volume = \beta_0+\beta_1\cdot Girth +\beta_2\cdot Height+\beta_4 \cdot Girth^2+\beta_5\cdot Girth^2\cdot Height$  </span>
+
+<span style="color:DarkViolet">Model 5: 
+$Volume = \beta_0+\beta_4 \cdot Girth^2+\beta_5\cdot Girth^2\cdot Height$  
+</span>
+
+<span style="color:DarkViolet">Model 6: 
+$Volume = \beta_0+\beta_5\cdot Girth^2\cdot Height$  
+</span>
+
+### <span style="color:DarkViolet">Questions 25-30</span> **<span style="color:Crimson">(6 points, 1 each)</span>**:
+
+<span style="color:DarkViolet">Use LOOCV (note n = 31) method to calculate $CV_{(31)}$ for each of Models 1-6.  Report the $CV_{(31)}$ for each model.</span>
+
+<span style="color:green">**Numeric Answer** </span>  
+**<span style="color:red">(AUTOGRADED on D2L)</span>**:  
+For Model 1, $CV_{(31)}$ =  
+For Model 2, $CV_{(31)}$ =  
+For Model 3, $CV_{(31)}$ =  
+For Model 4, $CV_{(31)}$ =  
+For Model 5, $CV_{(31)}$ =  
+For Model 6, $CV_{(31)}$ =  
+(use code space in next question)  
+
+### <span style="color:DarkViolet">Question 31</span> **<span style="color:Crimson">(4 points)</span>**:
+
+<span style="color:DarkViolet"> Enter your R code for computing the $CV_{(31)}$ measure for Model 6 below. </span>
+
+<span style="color:green">**Possible Answer**: </span>
+```{r echo=TRUE}
+#Q31
+
+model_1 <- (Volume ~ Girth + Height + GirthHeight + Girth2 + Girth2Height)
+model_2 <- (Volume ~ Girth + Height) 
+model_3 <- (Volume ~ Girth + Height + GirthHeight) 
+model_4 <- (Volume ~ Girth + Height + Girth2 + Girth2Height)
+model_5 <- (Volume ~ Girth2 + Girth2Height)
+model_6 <- (Volume ~ Girth2 + Height) 
+all_models <- list(model_1, model_2, model_3, model_4, model_5, model_6)
+
+
+k <- 5
+model_count <- length(all_models)
+observation_count <- nrow(trees)
+actual_values <- trees$Volume
+all_model_mse <- rep(NA, model_count)
+all_model_mse_adj <- rep(NA, model_count)
+all_model_cv <- rep(NA, model_count)
+groups_k <- c(rep(1:k, 6), 1)
+#groups_loocv <- rep(1:observation_count)
+set.seed(2)
+groups <- sample(groups_k, observation_count)
+#groups <- sample(groups_loocv, observation_count)
+
+for (model_index in 1:model_count) { 
+    model_fit <- lm(formula = all_models[[model_index]], data = trees)
+    all_model_mse[model_index] <- sum((model_fit$fitted.values - actual_values) ^ 2) / observation_count
+    all_model_mse_adj[model_index] <- sum((model_fit$fitted.values - actual_values) ^ 2) / (observation_count - 1 - model_index)
+
+    predictions <- rep(NA, observation_count)
+    for (fold in 1:k) {
+        test_mask <- (groups == fold)    
+        train_mask <- !test_mask
+        lm_fit_cv <- lm(formula = all_models[[model_index]], data = trees, subset = train_mask)
+        predictions[test_mask] <- predict.lm(lm_fit_cv, trees[test_mask,])
+    }
+    all_model_cv[model_index] <- sum((predictions - actual_values) ^ 2) / observation_count
+}
+
+#Q25
+8.957115
+
+#Q26
+18.157829
+
+#Q27
+7.904433
+
+#Q28
+8.037109
+
+#Q29
+7.075083
+
+#Q30
+My answer was 8.92032
+My second answer was ??? Is this a rounding issue?
+```
+
+
+### <span style="color:DarkViolet">Question 32</span> **<span style="color:Crimson">(1 point)</span>**:
+
+<span style="color:DarkViolet">Which model would you select based on the values of $CV_{(31)}$ for LOOCV? </span>
+
+<span style="color:green">**Multiple Choice Answer** </span>
+**<span style="color:red">(AUTOGRADED on D2L)</span>**:  one of  
+Model 1,  
+Model 2,  
+Model 3,  
+Model 4,  
+Model 5, or  
+Model 6  
+
+***
+My answer was Model 5
+My second answer was model 6``
+
+### <span style="color:DarkViolet">Question 33</span> **<span style="color:Crimson">(2 points)</span>**:
+
+<span style="color:DarkViolet">Explain why you chose the model selected in the previous question. </span>
+
+
+<span style="color:green">**Text Answer**: </span>
+
+### <span style="color:DarkViolet">Questions 34-39</span> **<span style="color:Crimson">(6 points, 1 each)</span>**:
+
+<span style="color:DarkViolet">Using the same split of the data into five sets as you performed in Problem 1, use 5-fold cross-validation method to calculate $CV_{(5)}$  for each of Models 1-6.  Report the $CV_{(5)}$  for each model.</span>
+
+```{r}
+
+
+#Q34
+
+#Q35
+
+#Q36
+
+#Q37
+
+#Q38
+
+#Q39
+
+```
+
+<span style="color:green">**Numeric Answer** </span>  
+**<span style="color:red">(AUTOGRADED on D2L)</span>**:  
+For Model 1, $CV_{(5)}$ =  
+For Model 2, $CV_{(5)}$ =  
+For Model 3, $CV_{(5)}$ =  
+For Model 4, $CV_{(5)}$ =  
+For Model 5, $CV_{(5)}$ =  
+For Model 6, $CV_{(5)}$ =  
+(use code space above)  
+
+
+
+### <span style="color:DarkViolet">Question 40</span> **<span style="color:Crimson">(1 point)</span>**:
+
+<span style="color:DarkViolet">Which model would you select based on the values of $CV_{(5)}$ for 5-fold CV? </span>
+
+<span style="color:green">**Multiple Choice Answer** </span>
+**<span style="color:red">(AUTOGRADED on D2L)</span>**:  one of  
+Model 1,  
+Model 2,  
+Model 3,  
+Model 4,  
+Model 5, or  
+Model 6  
+
+My answer was model 6
+
+### <span style="color:DarkViolet">Question 41</span> **<span style="color:Crimson">(2 points)</span>**:
+
+<span style="color:DarkViolet">Explain why you chose the model selected in the previous question. </span>
+
+<span style="color:green">**Text Answer**: </span>
+
+
+### <span style="color:DarkViolet">Question 42</span> **<span style="color:Crimson">(3 points)</span>**:
+
+<span style="color:DarkViolet">Considering the form of the model that was selected by cross-validation, why does this model make sense from a practical standpoint? </span>
+
+<span style="color:green">**Text Answer**: </span>
+
+*** 
+My answer was girth squared times height makes sense from a practical standpoint because it most closely represents the formula for volume for a cylinder.
+
+## Problem 3 - Model Assessment & Selection with KNN
+
+<span style="color:DarkViolet"> This problem practices application of proper model assessment and selection techniques, with the kNN model. </span> 
+
+<span style="color:DarkViolet"> **Important**:  Use the FNN library for fitting K-nearest neighbors, to obtain consistent answers.</span>
+
+<span style="color:DarkViolet"> In this problem, you will once again use the K-nearest neighbors approach to analyze the gas mileage of cars.  You will use the **Auto** data set from the ISLR package, along with the two new variables, **weight.std** and **year.std** (standardized values of the weight and year), that you created in Homework 1: K-Nearest Neighbors.</span>
+
+
+
+
+### <span style="color:DarkViolet">Question 43</span> **<span style="color:Crimson">(3 points)</span>**:
+
+<span style="color:DarkViolet"> **Model assessment**   </span>
+<span style="color:DarkViolet"> Starting with: </span>
+
+$\texttt{groups = c(rep(1:10,39),1,2)}$
+
+<span style="color:DarkViolet"> Set R’s seed to 2 and use sample() to divide the data into ten sets.  Then use 10-fold cross-validation method to calculate $CV_{(10)}$  for 1-nearest neighbor regression. Remember to re-standardize each training set inside the cross-validation. Report the value.   </span>
+
+<span style="color:green">**Numeric Answer** </span>  
+**<span style="color:red">(AUTOGRADED on D2L)</span>**:  
+<span style="color:DarkViolet"> $CV_{(10)}$ = </span>  
+(use code space in next question)  
+My answer was 8.465289
+My second answer was ???
+
+### <span style="color:DarkViolet">Question 44</span> **<span style="color:Crimson">(4 points)</span>**:
+
+<span style="color:DarkViolet">Enter your R code for computing the $CV_{(10)}$ measure below. </span>
+
+<span style="color:green">**Code Answer**: </span>
+```{r echo=TRUE}
+library(ISLR)
+library(FNN)
+
+k <- 10
+model_count <- 30
+groups_k <- c(rep(1:10, 39), 1, 2)
+observation_count <- nrow(Auto)
+set.seed(2)
+groups <- sample(groups_k, observation_count)
+all_predictions <- rep(NA, observation_count)
+all_model_cv <- rep(NA, model_count)
+
+weight_std <- scale(Auto$weight)
+year_std <- scale(Auto$year)
+x_std <- data.frame(weight_std, year_std)
+y <- Auto$mpg
+
+
+for (model in 1:model_count) {
+    for (fold in 1:k) {
+        test_mask <- (groups == fold)
+        train_mask <- !test_mask
+        train_x <- x_std[train_mask,]
+        train_x_std <- scale(train_x)
+        train_y <- y[train_mask]
+        valid_x <- x_std[test_mask, ]
+        valid_x_std <- scale(valid_x,
+                 center = attr(train_x_std, 'scaled:center'),
+                 scale = attr(train_x_std, 'scaled:scale'))
+        predictions <- knn.reg(train_x_std,
+                   valid_x_std,
+                   train_y,
+                   k = 1)
+        all_predictions[test_mask] <- predictions$pred
+    }
+    all_model_cv[model] <- mean((y - all_predictions) ^ 2)
+}
+g <- ggplot(mapping = aes(x=1:model_count, y=all_model_cv))
+g + geom_point()
+```
+
+
+
+### <span style="color:DarkViolet">Question 45</span> **<span style="color:Crimson">(1 point)</span>**:
+
+<span style="color:DarkViolet">In general, how should the $CV_{(10)}$ value compare to the value of MSE (computed by reusing the same data used to fit the model)?</span>
+
+<span style="color:green">**Multiple Choice Answer** </span>
+**<span style="color:red">(AUTOGRADED on D2L)</span>**:  one of 
+$CV_{(10)} > MSE$,  
+$CV_{(10)} < MSE$, or  
+$CV_{(10)} \approx MSE$
+
+***
+
+### <span style="color:DarkViolet">Question 46</span> **<span style="color:Crimson">(3 points)</span>**:
+
+<span style="color:DarkViolet">Consider models 1-30 as the k-nearest neighbors regression for values of k from 1 to 30. Using the same split of the data into ten sets as you performed in the Model assessment section, use 10-fold cross-validation method to calculate CV(10) for each of Models 1-30; remember to re-standardize each training set inside the cross-validation. Make a plot of the CV(10) as a function of k.
+Upload your plot to Homework 2: CV(10) Plot.  </span>
+
+<span style="color:green">**Plot Answer - submit to D2L discussion board *Homework 2: CV(10) Plot* **: </span>
+```{r echo=FALSE}
+
+My answer was I chose k = 14. While k = 20 offered the absolute best CV,  k = 14 was close. Additionally, this model has 6 less variables so would be less complex.
+```
+
+
+
+### <span style="color:DarkViolet">Question 47</span> **<span style="color:Crimson">(2 points)</span>**:
+
+<span style="color:DarkViolet">Which k (number of nearest neighbors) would you select based on the values of $CV_{(10)}$ for 10-fold CV?
+
+ </span>
+
+<span style="color:green">**Numeric (Integer) Answer** </span>  
+**<span style="color:red">(AUTOGRADED on D2L)</span>**:  
+

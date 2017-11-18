@@ -56,6 +56,26 @@ plot_best_k <- function (training_data,
 	plot(all_error_rate ~ K, main='Error rate vs. K', ylab='Error rate', xlab='K')
 }
 
+get_best_k <- function (training_data, 
+						 validation_data, 
+						 response_term, 
+						 predictor_terms) {
+	K <- seq(1, nrow(validation_data), by=2)
+	n = length(K)
+	all_error_rate <- numeric(n)
+	for (i in 1:n) {
+		predictions <- knn(training_data[, predictor_terms],
+						   data.frame(validation_data[, predictor_terms]),
+						   training_data[, response_term], 
+						   k=K[i])
+		error_rate <- get_error_rate(predictions, 
+									 validation_data[, response_term])
+		all_error_rate[i] <- error_rate
+	}
+        best_k <- min(K[which(all_error_rate == min(all_error_rate))])
+	return(best_k)
+}
+
 #Used in the perform_cross_validation function.
 get_cv_groups <- function(n, k, seed) {
 	if (n %% k == 0) {

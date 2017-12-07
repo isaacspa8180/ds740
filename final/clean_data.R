@@ -1,3 +1,6 @@
+library(stringi)
+
+
 df_all <- read.csv('winemag-data-130k-v2.csv', na.strings='')
 
 #remove duplicates
@@ -33,3 +36,15 @@ df$title <- NULL
 df$description <- NULL
 
 #NULLs designation is 16% NULL and price is 12%. What to do?
+#remove accents
+#lower case
+to_convert <- c('designation', 'variety', 'winery')
+for (item in to_convert) {
+    item_values <- df[item][[1]]
+    item_values_no_accent <- stri_trans_general(item_values, 'latin-ascii')
+    df[item] <- as.factor(stri_trans_general(item_values_no_accent, 'lower'))
+}
+
+#linear regression
+#full
+fit <- lm(points ~ ., data=df)

@@ -1,0 +1,28 @@
+---
+title: DS 740 Final
+author: Paul Isaacson
+date: December 13, 2017
+output: word_document
+---
+question
+I looked at a dataset 649 secondary students from Portugal. This dataset showed grade achievement against serveral demographic, social/emotional and school related categories. The data was collected between 2005 and 2006 from two sources including reports directly from the school as well as an in-class questionaire.
+
+There is evidence that the Portugal government is placing greater importance on academic performance. From 1973 to 2014, the Portugal government increased expenditure on education as a percent of GDP from 1.6% to 5.1% (1). This would strongly suggest that the government is taking education improvement seriously. As part of this, The Portugal goverment needs strong analysis on what factors affect academic performance. I believe the analysis in this paper can help.
+
+analysis
+I first explored the 30 predictor variables for correlation. Low correlation was found among all predictor variables. As such, shrinkage techniques, such as ridge regression and lasso were not explored. However, I still desired to reduce the dimensionality of the dataset. First, principle component analysis was explored. Unforunately, to explain at least 90% of the variance in the data, 24 principle components were needed INSERT GRAPH. Next, the forward and backward stepwise selection was performed. This subset of variables was compared to the full model using three techniques, multiple linear regression, support vector machines, and artificial neural networks. 
+
+Under 10-fold cross validation, all models performed better using the subset of the data vs. the full. The best model out-of-the-box was the multiple linear regression (CV approx. 7.70) with both the support vector machines and aritificial neural network models quite a bit higher (both with CV greater than 10.
+
+To improve the svm, cross validation was used to tune the gamma and cost. Under an optimal parameters (radial=kernel, gamma=0.01, and cost=4) a CV of approx 7.17 was uptained.
+
+To improve the ann, cross validation was used to tune the number of hidden nodes. However, under the optimal number, 1, the CV was still lower than svm (CV > 10). Further improvement came from finding a differnt subset of variables using combinations of the absolute value of the weights using a function found in the caret package in R (2). Again, the results were not as good as the svm (CV approx. 8.47).
+
+results
+The results showed that using a subset of the data with an svm model with radial kernel and optimal gamma and cost produced the best perdictor of final grade. The subset of variables included failures, higher, studytime, Dalc, address, schoolsup, goout, reason, Medu, health, famrel, sex, age, romantic, Fjob, internet. Perhaps most actionable in this list is internet. Having access to the internet is shown to be correlated with higher grade achievement. As such, the Portugal government may do well to ensure the student body has access to internet outside of school hours. 
+  
+(1)
+World Bank. (n.d.). Government expenditure on education, total (% of GDP). Retrieved from https://data.worldbank.org/indicator/SE.XPD.TOTL.GD.ZS?locations=PT.
+(2)
+ Gevrey, M., Dimopoulos, I., & Lek, S. (2003). Review and comparison of methods to study the contribution of variables in artificial neural network models. Ecological Modelling, 160(3), 249-264.
+

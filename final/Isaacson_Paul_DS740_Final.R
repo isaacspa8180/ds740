@@ -30,8 +30,23 @@ step_backward_formula <- step_backward$call$formula
 
 
 #==============================================================================
+#plots
+#==============================================================================
+#These are plots of the variables indentified in the step backward selection 
+#that were deemed important. It is interested to see each compared to the data.
+predictors <- c('sex', 'age', 'address', 'Fjob', 'reason', 'studytime', 
+                'failures', 'schoolsup', 'higher', 'internet', 'romantic', 
+                'famrel', 'goout', 'Dalc', 'health') 
+par(mfrow=c(4, 4))
+for (predictor in predictors) {
+    plot(df[, 'G3'] ~ df[, predictor], main=predictor, xlab='', ylab='G3')
+}
+
+
+#==============================================================================
 #tuning parameters
 #==============================================================================
+#These are used in the tuning of models
 #svm
 kernel <- 'radial'
 gammas <- c(0.0001, 0.001, 0.01, 0.1, 1, 10)
@@ -45,6 +60,9 @@ decays <- c(.1,.5, 1,5,10,50,100,500)
 #==============================================================================
 #results
 #==============================================================================
+#For the results both full variables and the subset explored in the step backward
+#selection were used in lm, svm, and ann. Further, tuning of cost and gamma was 
+#performed for svm and size and decay for ann.
 #------------------------------------------------------------------------------
 #lm
 #------------------------------------------------------------------------------
@@ -62,6 +80,7 @@ svm_full_tuned <- tune.svm(full_formula, data=df, kernel=kernel,
                            cost=costs, gamma=gammas)
 #step_backward
 svm_step_backward <- tune.svm(step_backward_formula, data=df, kernel=kernel) 
+#The model below consistently produced the best CV values (CV approx 7.14)
 svm_step_backward_tuned <- tune.svm(step_backward_formula, data=df, kernel=kernel, 
                                     cost=costs, gamma=gammas)
 #------------------------------------------------------------------------------
@@ -74,11 +93,5 @@ ann_full_tuned <- tune.nnet(full_formula, data=df, size=sizes, decay=decays, lin
 ann_step_backward <- tune.nnet(step_backward_formula, data=df, size=2, linout=TRUE)
 ann_step_backward_tuned <- tune.nnet(step_backward_formula, data=df, size=sizes, decay=decays, linout=TRUE)
 
-predictors <- c('sex', 'age', 'address', 'Fjob', 'reason', 'studytime', 
-                'failures', 'schoolsup', 'higher', 'internet', 'romantic', 
-                'famrel', 'goout', 'Dalc', 'health') 
-par(mfrow=c(1, 2))
-for (predictor in predictors) {
-    plot(df[, 'G3'] ~ df[, predictor], main=predictor, xlab='', ylab='G3')
-}
+
 
